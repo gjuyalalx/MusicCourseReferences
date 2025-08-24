@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time Signature Metronome</title>
+  <style>
+    :root {
+      --bg: #0f1220; /* deep navy */
+      --panel: #151938;
+      --text: #e7e9ff;
+      --muted: #9aa1c6;
+      --accent: #7aa2ff;
+      --accent-2: #8dffb0;
+      --warn: #ffb86b;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 70% -10%, #1d2250 0%, var(--bg) 50%, #0b0e1a 100%);
+      color: var(--text);
+      display: grid; place-items: center; padding: 16px;
+    }
+    .app {
+      width: min(920px, 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+    header { padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); display:flex; align-items:center; gap:12px; }
+    header h1 { font-size: 18px; margin: 0; letter-spacing: 0.3px; }
+    header .note { color: var(--muted); font-size: 12px; margin-left: auto; }
+
+    .controls { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; padding: 18px; align-items: end; }
+    .field { grid-column: span 3; background: var(--panel); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; }
+    .field.wide { grid-column: span 6; }
+    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .field select, .field input[type="number"], .field input[type="range"] {
+      width: 100%; background: #0f1330; color: var(--text); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px; padding: 10px; font-size: 14px; outline: none;
+    }
+    .row { display:flex; gap:10px; align-items:center; }
+    .row input[type="checkbox"] { width: 18px; height: 18px; }
+
+    .actions { padding: 0 18px 18px; display:flex; gap: 12px; align-items:center; }
+    button.primary {
+      background: linear-gradient(180deg, var(--accent), #4a72ff);
+      color: #06122a; font-weight: 700; letter-spacing: .3px;
+      border: none; padding: 12px 16px; border-radius: 12px; cursor: pointer;
+      box-shadow: 0 6px 18px rgba(74,114,255,0.35); transition: transform .05s ease;
+    }
+    button.primary:active { transform: translateY(1px); }
+    button.secondary { background: #1b2044; color: var(--text); border: 1px solid rgba(255,255,255,0.1); padding: 12px 16px; border-radius: 12px; cursor: pointer; }
+
+    .stage { padding: 18px; }
+    .grid { display: grid; gap: 16px; }
+    .group { display: flex; gap: 10px; align-items:center; }
+    .badge { font-size: 12px; color: var(--muted); width: 22px; text-align: right; }
+    .pulses { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pulse { width: 28px; height: 28px; border-radius: 999px; border: 2px solid rgba(255,255,255,0.15); position: relative; overflow: hidden; }
+    .pulse .fill { position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(120% 120% at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.02) 60%); opacity: 0.15; transition: opacity .08s ease, transform .08s ease; }
+    .pulse.downbeat { border-color: rgba(122,162,255,0.8); }
+    .pulse.beat { border-color: rgba(141,255,176,0.5); }
+    .pulse.sub { border-color: rgba(255,255,255,0.12); }
+    .pulse.active .fill { opacity: 1; transform: scale(1.08); }
+
+    .footer { padding: 0 18px 18px; color: var(--muted); font-size: 12px; display:flex; justify-content: space-between; align-items:center; gap:12px; }
+    .kbd { background:#0e1332; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:2px 6px; color:#c9cff7; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    @media (max-width: 720px){ .field { grid-column: span 6; } .field.wide { grid-column: span 12; } }
+    @media (max-width: 480px){ .field { grid-column: span 12; } }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <header>
+      <h1>Time Signature Metronome</h1>
+      <div class="note">Music and Audio Production Course</div>
+    </header>
+
+    <section class="controls">
+      <div class="field">
+        <label for="signature">Time Signature</label>
+        <select id="signature">
+          <option value="4/4">4/4 — 4 quarter-note beats</option>
+          <option value="3/4">3/4 — 3 quarter-note beats</option>
+          <option value="6/8">6/8 — 2 dotted-quarter beats (3+3)</option>
+          <option value="12/8">12/8 — 4 dotted-quarter beats (3+3+3+3)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="bpm">Tempo (BPM)</label>
+        <input id="bpm" type="number" min="20" max="300" step="1" value="100" />
+      </div>
+
+      <div class="field wide">
+        <label for="bpmRange">Adjust Tempo</label>
+        <input id="bpmRange" type="range" min="20" max="300" value="100" />
+      </div>
+
+      <div class="field">
+        <label>Subdivisions</label>
+        <div class="row">
+          <select id="subdiv">
+            <option value="1">Beats only</option>
+            <option value="2" selected>8ths (2 per beat)</option>
+            <option value="3">Triplets (3 per beat)</option>
+            <option value="4">16ths (4 per beat)</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top:6px; color: var(--muted); font-size: 12px;">
+          In 6/8 and 12/8, triplets are auto-used.
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="volume">Volume</label>
+        <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6" />
+      </div>
+    </section>
+
+    <section class="actions">
+      <button id="toggle" class="primary">Start</button>
+      <button id="tap" class="secondary" title="Tap tempo (press T)">Tap Tempo</button>
+      <div class="note">Shortcuts: <span class="kbd">Space</span> start/stop, <span class="kbd">T</span> tap</div>
+    </section>
+
+    <section class="stage">
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <div class="footer">
+      <div>Downbeat =BLUE | Beats= GREEN | Subdivisions = DIM.</div>
+      <div>Developed by ALX</div>
+    </div>
+  </div>
+
+  <script>
+    // ---- State & Utilities ----
+    const signatureEl = document.getElementById('signature');
+    const bpmEl = document.getElementById('bpm');
+    const bpmRangeEl = document.getElementById('bpmRange');
+    const subdivEl = document.getElementById('subdiv');
+    const volumeEl = document.getElementById('volume');
+    const toggleBtn = document.getElementById('toggle');
+    const tapBtn = document.getElementById('tap');
+    const gridEl = document.getElementById('grid');
+
+    const SIGS = {
+      '4/4': { type: 'simple', beats: 4, unit: 4 },
+      '3/4': { type: 'simple', beats: 3, unit: 4 },
+      '6/8': { type: 'compound', beats: 2, unit: 8, group: 3 }, // dotted-quarter beat
+      '12/8': { type: 'compound', beats: 4, unit: 8, group: 3 }
+    };
+
+    let audioCtx = null;
+    let masterGain = null;
+    let isPlaying = false;
+    let nextNoteTime = 0; // AudioContext time of next tick
+    let currentBarIndex = 0; // 0..beats-1
+    let currentSubIndex = 0; // 0..sub-1
+
+    // High-precision scheduler (lookahead pattern)
+    const lookahead = 25; // ms
+    const scheduleAheadTime = 0.1; // seconds
+    let timerID = null;
+
+    function ensureAudio(){
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = parseFloat(volumeEl.value);
+        masterGain.connect(audioCtx.destination);
+      }
+    }
+
+    function tempoSecondsPerBeat(sig){
+      const bpm = parseFloat(bpmEl.value);
+      if (sig.type === 'simple') {
+        // quarter note beat
+        return 60.0 / bpm;
+      } else {
+        // dotted-quarter beat in compound meters
+        return 60.0 / bpm;
+      }
+    }
+
+    function activeSubdivision(sig){
+      if (sig.type === 'compound') return 3; // triplet 8ths under dotted-quarter
+      return parseInt(subdivEl.value, 10);
+    }
+
+    // Create a short click with a simple envelope
+    function clickAt(time, kind){
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const base = kind === 'downbeat' ? 1000 : kind === 'beat' ? 800 : 650;
+      const dur = kind === 'sub' ? 0.03 : 0.045;
+      const peak = kind === 'downbeat' ? 0.8 : kind === 'beat' ? 0.6 : 0.38;
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(base, time);
+
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.exponentialRampToValueAtTime(peak, time + 0.002);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+
+      osc.connect(gain);
+      gain.connect(masterGain);
+
+      osc.start(time);
+      osc.stop(time + dur + 0.01);
+    }
+
+    function scheduleClick(time, sig, beatIndex, subIndex, subCount){
+      const isDownbeat = beatIndex === 0 && subIndex === 0;
+      const isBeatHead = subIndex === 0;
+      const kind = isDownbeat ? 'downbeat' : isBeatHead ? 'beat' : 'sub';
+      clickAt(time, kind);
+      visualPulse(sig, beatIndex, subIndex, subCount);
+    }
+
+    function scheduler(){
+      while (audioCtx && nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
+        const sig = SIGS[signatureEl.value];
+        const subCount = activeSubdivision(sig);
+        scheduleClick(nextNoteTime, sig, currentBarIndex, currentSubIndex, subCount);
+
+        // advance to next subdivision
+        const secPerBeat = tempoSecondsPerBeat(sig);
+        const secPerSub = secPerBeat / subCount;
+        nextNoteTime += secPerSub;
+
+        currentSubIndex++;
+        if (currentSubIndex >= subCount) {
+          currentSubIndex = 0;
+          currentBarIndex++;
+          if (currentBarIndex >= sig.beats) currentBarIndex = 0;
+        }
+      }
+      timerID = window.setTimeout(scheduler, lookahead);
+    }
+
+    function start(){
+      ensureAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      isPlaying = true;
+      toggleBtn.textContent = 'Stop';
+      buildGrid();
+      currentBarIndex = 0; currentSubIndex = 0;
+      nextNoteTime = audioCtx.currentTime + 0.05;
+      scheduler();
+    }
+
+    function stop(){
+      isPlaying = false;
+      toggleBtn.textContent = 'Start';
+      window.clearTimeout(timerID); timerID = null;
+      clearActive();
+    }
+
+    // ---- Visuals ----
+    function buildGrid(){
+      const sig = SIGS[signatureEl.value];
+      const sub = activeSubdivision(sig);
+      gridEl.innerHTML = '';
+      gridEl.style.gridTemplateColumns = '1fr';
+      for (let b = 0; b < sig.beats; b++){
+        const wrap = document.createElement('div');
+        wrap.className = 'group';
+        const badge = document.createElement('div');
+        badge.className = 'badge';
+        badge.textContent = b + 1;
+        const pulses = document.createElement('div');
+        pulses.className = 'pulses';
+        for (let s = 0; s < sub; s++){
+          const p = document.createElement('div');
+          const role = s === 0 ? (b === 0 ? 'downbeat' : 'beat') : 'sub';
+          p.className = `pulse ${role}`;
+          p.dataset.beat = b; p.dataset.sub = s;
+          const fill = document.createElement('div');
+          fill.className = 'fill';
+          p.appendChild(fill);
+          pulses.appendChild(p);
+        }
+        wrap.appendChild(badge);
+        wrap.appendChild(pulses);
+        gridEl.appendChild(wrap);
+      }
+    }
+
+    function clearActive(){
+      document.querySelectorAll('.pulse.active').forEach(el => el.classList.remove('active'));
+    }
+
+    function visualPulse(sig, beat, sub, subCount){
+      const selector = `.pulse[data-beat="${beat}"][data-sub="${sub}"]`;
+      const el = gridEl.querySelector(selector);
+      if (!el) return;
+      el.classList.add('active');
+      // Small decay to show motion
+      setTimeout(() => el.classList.remove('active'), 90);
+    }
+
+    // ---- Tap tempo ----
+    let tapTimes = [];
+    function tap(){
+      const now = performance.now();
+      tapTimes.push(now);
+      // Keep last 8 taps
+      if (tapTimes.length > 8) tapTimes.shift();
+      if (tapTimes.length >= 2){
+        const intervals = [];
+        for (let i = 1; i < tapTimes.length; i++) intervals.push(tapTimes[i] - tapTimes[i-1]);
+        const avgMs = intervals.reduce((a,b)=>a+b,0) / intervals.length;
+        const bpm = Math.max(20, Math.min(300, Math.round(60000 / avgMs)));
+        bpmEl.value = bpm; bpmRangeEl.value = bpm;
+        if (isPlaying) { buildGrid(); }
+      }
+    }
+
+    // ---- Events ----
+    toggleBtn.addEventListener('click', () => {
+      if (isPlaying) stop(); else start();
+    });
+
+    tapBtn.addEventListener('click', tap);
+
+    document.addEventListener('keydown', (e)=>{
+      if (e.code === 'Space') { e.preventDefault(); toggleBtn.click(); }
+      if (e.key.toLowerCase() === 't') { tap(); }
+    });
+
+    signatureEl.addEventListener('change', () => {
+      if (isPlaying) { buildGrid(); currentBarIndex = 0; currentSubIndex = 0; }
+    });
+
+    bpmEl.addEventListener('input', () => {
+      bpmRangeEl.value = bpmEl.value;
+    });
+    bpmRangeEl.addEventListener('input', () => {
+      bpmEl.value = bpmRangeEl.value;
+    });
+
+    subdivEl.addEventListener('change', () => {
+      const sig = SIGS[signatureEl.value];
+      if (sig.type === 'simple') buildGrid();
+    });
+
+    volumeEl.addEventListener('input', () => {
+      if (masterGain) masterGain.gain.value = parseFloat(volumeEl.value);
+    });
+
+    // Initialize UI
+    buildGrid();
+  </script>
+</body>
+</html>
