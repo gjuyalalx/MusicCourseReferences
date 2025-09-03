@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Drum Sound — Type the Trigger Key</title>
+  <style>
+    :root{--bg:#fbfbfe;--card:#ffffff;--accent:#5b6cff;--ok:#198754;--err:#dc3545;--muted:#6b7280}
+    body{font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial;margin:20px;background:var(--bg);color:#071029}
+    .wrap{max-width:700px;margin:0 auto}
+    header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:6px 0 12px;color:var(--muted)}
+    .panel{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 22px rgba(8,12,20,0.06)}
+
+    .rows{display:flex;flex-direction:column;gap:10px}
+    .row{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;border:1px solid #eef2ff}
+    .part{width:240px;font-weight:700}
+    .input{width:120px}
+    input[type="text"]{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9f2;font-weight:700;text-align:center}
+    .status{width:140px;font-weight:700;text-align:center}
+    .status.ok{color:var(--ok)}
+    .status.err{color:var(--err)}
+
+    .actions{display:flex;gap:8px;align-items:center;margin-top:12px}
+    button{padding:10px 14px;border-radius:9px;border:none;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid #e6e9f2;color:var(--muted)}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Drum Sound Quiz — Type the Trigger Key</h1>
+        <p class="lead">For each drum sound, type the key (or keys) that trigger that sound. Press <strong>Reveal Answers</strong> to check. Each row shows your attempt and whether it was correct.</p>
+      </div>
+      <div class="actions">
+        <button id="resetBtn" class="ghost">Reset</button>
+        <button id="revealBtn">Reveal Answers</button>
+      </div>
+    </header>
+
+    <div class="panel">
+      <h3 style="margin:0 0 10px">Questions</h3>
+      <div class="rows" id="rows"></div>
+      <div class="note">Hint: For answers with two possible keys (e.g., "S/D"), either letter is accepted. Semicolon is <code>;</code>.</div>
+    </div>
+  </div>
+
+<script>
+// answers mapping (multiple letters allowed per part)
+const correctMap = {
+  'KICK': ['A'],
+  'SNARE': ['S','D'],
+  'SIDE SNARE': ['W'],
+  'CLOSED HI-HAT': ['T'],
+  'PEDAL HI-HAT': ['Y'],
+  'OPEN HI-HAT': ['U'],
+  'FLOOR TOM': ['F','G'],
+  'LOW TOM': ['H','J'],
+  'HIGH TOM': ['K','L'],
+  'CRASH CYMBAL': ['O'],
+  'RIDE CYMBAL': ['P'],
+  'RIDE BELL': [';']
+};
+
+const parts = Object.keys(correctMap);
+const rowsEl = document.getElementById('rows');
+
+// render rows
+parts.forEach(part => {
+  const row = document.createElement('div'); row.className='row';
+  const name = document.createElement('div'); name.className='part'; name.textContent = part;
+  const wrapper = document.createElement('div'); wrapper.className='input';
+  const input = document.createElement('input'); input.type='text'; input.maxLength=2; input.dataset.part=part; input.placeholder='Type key here';
+  input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); return; } });
+  wrapper.appendChild(input);
+
+  const status = document.createElement('div'); status.className='status'; status.textContent = 'No attempt';
+  row.appendChild(name); row.appendChild(wrapper); row.appendChild(status);
+  rowsEl.appendChild(row);
+});
+
+function normalizeInput(val){ if(!val) return ''; return val.trim().toUpperCase(); }
+
+function checkAll(){
+  document.querySelectorAll('input[data-part]').forEach(inp=>{
+    const part = inp.dataset.part; const val = normalizeInput(inp.value);
+    const statusEl = inp.parentElement.nextElementSibling;
+    if(!val){ statusEl.textContent = 'No attempt'; statusEl.classList.remove('ok','err'); return; }
+    const accepted = correctMap[part];
+    const candidate = val.replace('/', '').replace(' ', '');
+    const ok = accepted.includes(candidate) || accepted.includes(candidate[0]);
+    if(ok){ statusEl.textContent = 'Correct — ' + candidate; statusEl.classList.remove('err'); statusEl.classList.add('ok'); }
+    else{ statusEl.textContent = 'Try again — ' + candidate; statusEl.classList.remove('ok'); statusEl.classList.add('err'); }
+  });
+}
+
+document.getElementById('revealBtn').addEventListener('click', ()=>{
+  checkAll();
+  setTimeout(()=>{
+    document.querySelectorAll('input[data-part]').forEach(inp=>{
+      const part = inp.dataset.part; const val = normalizeInput(inp.value);
+      const statusEl = inp.parentElement.nextElementSibling;
+      const accepted = correctMap[part];
+      if(!val || !statusEl.classList.contains('ok')){
+        statusEl.textContent = 'Answer: ' + accepted.join(' / ');
+        statusEl.classList.remove('err'); statusEl.classList.add('ok');
+      }
+    });
+  }, 700);
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  document.querySelectorAll('input[data-part]').forEach(inp=>{ inp.value=''; inp.focus(); inp.blur(); const s=inp.parentElement.nextElementSibling; s.textContent='No attempt'; s.classList.remove('ok','err'); });
+});
+
+window.addEventListener('keydown', (e)=>{
+  const key = e.key.length===1 ? e.key.toUpperCase() : (e.key===';'?';':null);
+  if(!key) return;
+  const nextEmpty = Array.from(document.querySelectorAll('input[data-part]')).find(i=>!i.value);
+  if(!nextEmpty) return;
+  nextEmpty.value = key;
+  const part = nextEmpty.dataset.part; const accepted = correctMap[part];
+  const statusEl = nextEmpty.parentElement.nextElementSibling;
+  const ok = accepted.includes(key);
+  if(ok){ statusEl.textContent = 'Correct — ' + key; statusEl.classList.add('ok'); }
+  else{ statusEl.textContent = 'Try again — ' + key; statusEl.classList.add('err'); }
+});
+</script>
+</body>
+</html>
