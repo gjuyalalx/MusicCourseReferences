@@ -1,103 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BPM Calculator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      background-color: #f4f4f4;
       margin: 0;
-      background: #f4f4f9;
+      font-family: Arial, sans-serif;
     }
     .app {
       width: 700px;
-      height: 400px;
+      height: 350px; /* compact size */
       background: white;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       border-radius: 12px;
-      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       padding: 20px;
+      position: relative;
     }
     h1 {
-      margin-bottom: 20px;
+      margin: 10px 0;
+      font-size: 32px;
     }
     button {
-      width: 300px;
+      width: 150px;
       height: 150px;
-      font-size: 24px;
-      border: none;
-      border-radius: 12px;
-      background: #4CAF50;
+      margin: 8px 0;
+      border-radius: 50%;
+      font-size: 20px;
+      background-color: #007BFF;
       color: white;
+      border: none;
       cursor: pointer;
     }
-    button:active {
-      background: #45a049;
+    button:hover {
+      background-color: #0056b3;
     }
     select {
-      margin-top: 20px;
-      font-size: 18px;
-      padding: 8px;
-      border-radius: 6px;
+      font-size: 16px;
+      transform: scale(1.4); /* increase size by 40% */
+      margin-bottom: 15px;
     }
-    #bpmDisplay {
-      margin-top: 30px;
-      font-size: 28px;
-      font-weight: bold;
+    .footer {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 12px;
+      color: #888;
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <h1>BPM Calculator</h1>
-    <button id="tapButton">Tap (or Press Space)</button><br>
     <select id="timeSignature">
-      <option>2/4</option>
-      <option>3/4</option>
-      <option selected>4/4</option>
-      <option>5/4</option>
-      <option>6/8</option>
-      <option>9/8</option>
-      <option>12/8</option>
+      <option value="4/4">4/4</option>
+      <option value="3/4">3/4</option>
+      <option value="6/8">6/8</option>
+      <option value="12/8">12/8</option>
+      <option value="6/4">6/4</option>
     </select>
-    <div id="bpmDisplay">BPM: --</div>
+    <h1 id="bpm">BPM: 0</h1>
+    <button id="tapButton">Tap</button>
+    <div class="footer">Created by ALX</div>
   </div>
 
   <script>
-    const tapButton = document.getElementById("tapButton");
-    const bpmDisplay = document.getElementById("bpmDisplay");
-
     let lastTap = 0;
     let intervals = [];
 
     function calculateBPM() {
-      if (intervals.length < 2) return;
-      let avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-      let bpm = Math.round(60000 / avgInterval);
-      bpmDisplay.textContent = `BPM: ${bpm}`;
+      if (intervals.length < 2) return 0;
+      const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+      return Math.round(60000 / avgInterval);
     }
 
-    function registerTap() {
+    function tap() {
       const now = Date.now();
-      if (lastTap !== 0) {
+      if (lastTap > 0) {
         const interval = now - lastTap;
         intervals.push(interval);
-        if (intervals.length > 8) intervals.shift();
-        calculateBPM();
+        if (intervals.length > 5) intervals.shift();
+        const bpm = calculateBPM();
+        document.getElementById("bpm").innerText = "BPM: " + bpm;
       }
       lastTap = now;
     }
 
-    tapButton.addEventListener("click", registerTap);
-    document.body.addEventListener("keydown", (e) => {
+    document.getElementById("tapButton").addEventListener("click", tap);
+    document.addEventListener("keydown", (e) => {
       if (e.code === "Space") {
         e.preventDefault();
-        registerTap();
+        tap();
       }
     });
   </script>
