@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BPM Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f4f4f9;
+    }
+    .app {
+      width: 700px;
+      height: 400px;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    button {
+      width: 300px;
+      height: 150px;
+      font-size: 24px;
+      border: none;
+      border-radius: 12px;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:active {
+      background: #45a049;
+    }
+    select {
+      margin-top: 20px;
+      font-size: 18px;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    #bpmDisplay {
+      margin-top: 30px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>BPM Calculator</h1>
+    <button id="tapButton">Tap (or Press Space)</button><br>
+    <select id="timeSignature">
+      <option>2/4</option>
+      <option>3/4</option>
+      <option selected>4/4</option>
+      <option>5/4</option>
+      <option>6/8</option>
+      <option>9/8</option>
+      <option>12/8</option>
+    </select>
+    <div id="bpmDisplay">BPM: --</div>
+  </div>
+
+  <script>
+    const tapButton = document.getElementById("tapButton");
+    const bpmDisplay = document.getElementById("bpmDisplay");
+
+    let lastTap = 0;
+    let intervals = [];
+
+    function calculateBPM() {
+      if (intervals.length < 2) return;
+      let avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+      let bpm = Math.round(60000 / avgInterval);
+      bpmDisplay.textContent = `BPM: ${bpm}`;
+    }
+
+    function registerTap() {
+      const now = Date.now();
+      if (lastTap !== 0) {
+        const interval = now - lastTap;
+        intervals.push(interval);
+        if (intervals.length > 8) intervals.shift();
+        calculateBPM();
+      }
+      lastTap = now;
+    }
+
+    tapButton.addEventListener("click", registerTap);
+    document.body.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        registerTap();
+      }
+    });
+  </script>
+</body>
+</html>
