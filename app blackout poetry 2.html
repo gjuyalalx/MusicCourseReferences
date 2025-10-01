@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blackout Poetry</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: #f5f6f9;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .landscape {
+      width: 90vw;
+      height: 56vw;
+      max-width: 1300px;
+      max-height: 730px;
+      min-width: 800px;
+      min-height: 450px;
+      aspect-ratio: 16/9;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 14px 48px rgba(40,40,45,0.09), 0 2.5px 6px 0 rgba(80,80,70,0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 44px 38px 25px 38px;
+      overflow: hidden;
+      position: relative;
+    }
+    .story-meta {
+      position: absolute;
+      left: 38px;
+      top: 20px;
+      font-size: 1.07rem;
+      font-weight: 600;
+      color: #596579;
+      letter-spacing: 0.3px;
+      z-index: 2;
+      background: #f5f6f9;
+      padding: 2px 10px 2px 0;
+      border-radius: 4px;
+    }
+    h2 {
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 44px 0 12px 0;
+      font-size: 2.3rem;
+      text-align: left;
+    }
+    #controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 0.5em;
+    }
+    .story-under-controls {
+      font-size: 1.02rem;
+      color: #7d8599;
+      margin-left: 2px;
+      margin-bottom: 10px;
+    }
+    #fontSizeLabel {
+      font-size: 1.05rem;
+      color: #8793a6;
+    }
+    #fontSizeUp, #fontSizeDown {
+      padding: 4px 13px;
+      border-radius: 4px;
+      border: none;
+      background: #e7eaf9;
+      color: #23263b;
+      font-size: 1.08em;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    #fontSizeUp:hover, #fontSizeDown:hover {
+      background: #cfd6ed;
+    }
+    #text {
+      margin-bottom: 24px;
+      font-size: 1.18rem;
+      line-height: 2.1;
+      text-align: justify;
+      word-spacing: 2px;
+      border-radius: 12px;
+      padding: 34px 20px;
+      background: #fafafd;
+      min-height: 180px;
+      max-height: 340px;
+      overflow: auto;
+      transition: font-size 0.18s;
+    }
+    .word {
+      display: inline-block;
+      cursor: pointer;
+      transition: background 0.23s, color 0.23s;
+      border-radius: 3px;
+      padding: 0 2px;
+      margin: 1px 2px;
+    }
+    .word:hover {
+      background: #e3eafd;
+    }
+    .blackout {
+      background: #23263b;
+      color: #23263b;
+      border-radius: 3px;
+    }
+    #reset {
+      margin-top: 6px;
+      align-self: flex-end;
+      padding: 13px 28px;
+      font-size: 1rem;
+      background: linear-gradient(90deg, #242432 60%, #465063 100%);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      box-shadow: 0 2px 12px rgba(50,60,80,0.10);
+      transition: background 0.16s;
+    }
+    #reset:hover {
+      background: linear-gradient(90deg, #383848 60%, #5c697e 100%);
+    }
+    footer {
+      position: absolute;
+      right: 42px;
+      bottom: 14px;
+      font-size: 13px;
+      color: #8793a6;
+    }
+  </style>
+</head>
+<body>
+  <div class="landscape">
+    <div class="story-meta">
+      "To Build a Fire" by Jack London
+    </div>
+    <h2>Blackout Poetry App</h2>
+    <div id="controls">
+      <span id="fontSizeLabel">Font size:</span>
+      <button id="fontSizeDown">-</button>
+      <button id="fontSizeUp">+</button>
+    </div>
+    <p id="text">
+      He stamped forcefully until the feeling returned to his feet. It certainly was cold, was his thought. That man from Sulphur Creek had spoken the truth when telling how cold it sometimes got in this country. And he had laughed at him at the time! That showed one must not be too sure of things. There was no mistake about it, it was cold. He walked a few steps, stamping his feet and waving his arms, until reassured by the returning warmth. Then he took some matches and proceeded to make a fire. In the bushes, the high water had left a supply of sticks. From here he got wood for his fire. Working carefully from a small beginning, he soon had a roaring fire. Bending over the fire, he first melted the ice from his face. With the protection of the fire's warmth he ate his lunch. For the moment, the cold had been forced away. The dog took comfort in the fire, lying at full length close enough for warmth and far enough away to escape being burned. When the man had finished eating, he filled his pipe with tobacco and had a comfortable time with a smoke. Then he pulled on his mittens, settled his cap firmly about his ears, and started along the creek trail toward the left. The dog was sorry to leave and looked toward the fire. This man did not know cold. Possibly none of his ancestors had known cold, real cold. But the dog knew and all of its family knew. And it knew that it was not good to walk outside in such fearful cold. It was the time to lie in a hole in the snow and to wait for this awful cold to stop. There was no real bond between the dog and the man. The one was the slave of the other. The dog made no effort to indicate its fears to the man. It was not concerned with the well-being of the man. It was for its own sake that it looked toward the fire. But the man whistled, and spoke to it with the sound of the whip in his voice. So the dog started walking close to the man's heels and followed him along the trail. The man put more tobacco in his mouth and started a new growth of yellow ice on his face. Again his moist breath quickly powdered the hair on his face with white. He looked around him. There did not seem to be so many pools of water under the snow on the left side of Henderson Creek, and for half an hour the man saw no signs of any.
+    </p>
+    <button id="reset">Reset</button>
+    <footer>Created by ALX</footer>
+  </div>
+  <script>
+    const textElement = document.getElementById("text");
+    const words = textElement.innerText.split(" ");
+    textElement.innerHTML = words.map(word => `<span class="word">${word}</span>`).join(" ");
+    document.querySelectorAll(".word").forEach(word => {
+      word.addEventListener("click", () => {
+        word.classList.toggle("blackout");
+      });
+    });
+    document.getElementById("reset").addEventListener("click", () => {
+      document.querySelectorAll(".word").forEach(word => {
+        word.classList.remove("blackout");
+      });
+    });
+
+    // Font size controls
+    let currentFontSize = 1.18;
+    const minFontSize = 0.9;
+    const maxFontSize = 2.2;
+    document.getElementById("fontSizeUp").onclick = function() {
+      if (currentFontSize < maxFontSize) {
+        currentFontSize += 0.09;
+        textElement.style.fontSize = currentFontSize + "rem";
+      }
+    };
+    document.getElementById("fontSizeDown").onclick = function() {
+      if (currentFontSize > minFontSize) {
+        currentFontSize -= 0.09;
+        textElement.style.fontSize = currentFontSize + "rem";
+      }
+    };
+  </script>
+</body>
+</html>
