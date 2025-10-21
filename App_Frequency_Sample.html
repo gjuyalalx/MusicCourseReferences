@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Frequency Learning App</title>
+    <title>Audio Frequency Sensitization</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -59,6 +59,19 @@
             color: #7f8c8d;
             text-align: center;
             line-height: 1.4;
+        }
+
+        .headphone-note {
+            font-size: 0.8rem;
+            color: #e74c3c;
+            font-weight: 500;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
         .frequency-grid {
@@ -209,6 +222,122 @@
             }
         }
 
+        .creative-section {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eaeaea;
+        }
+
+        .creative-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 15px; /* Add this line to create consistent spacing */
+}
+
+        .creative-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .creative-toggle {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .creative-toggle:hover {
+            background: #8e44ad;
+            transform: scale(1.03);
+        }
+
+        .creative-content {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .creative-content.active {
+            display: block;
+        }
+
+        .creative-description {
+            font-size: 0.8rem;
+            color: #5d6d7e;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .frequency-slider {
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #5d6d7e;
+            margin-bottom: 5px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e0e0e0;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #9b59b6;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            font-size: 0.75rem;
+            color: #3498db;
+            font-weight: 500;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .creative-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .creative-play {
+            background: #9b59b6;
+            flex: 1;
+        }
+
+        .creative-play:hover {
+            background: #8e44ad;
+        }
+
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -240,11 +369,12 @@
 <body>
     <div class="container">
         <header>
-            <h1>Audio Frequency Learning</h1>
+            <h1>Audio Frequency Sensitization</h1>
             <div class="creator">Created by ALX</div>
         </header>
 
         <p class="subtitle">Explore different frequency ranges and their characteristics in music production. Click to hear pure tones.</p>
+        <p class="headphone-note">🎧 Use headphones or earphones for the best listening experience.</p>
 
         <div class="frequency-grid">
             <!-- Sub-bass -->
@@ -254,7 +384,7 @@
                     <div class="frequency-value">40 Hz</div>
                 </div>
                 <p class="description">The lowest audible frequencies. Felt more than heard, provides power and foundation.</p>
-                <div class="instrument">Common in: Kick Drum, Bass Guitar, Synth Bass, Pipe Organ, Tuba</div>
+                <div class="instrument">Common in: Kick Drum</div>
                 <div class="audio-controls">
                     <button class="play-btn" data-frequency="40" data-type="tone">
                         <span>Play Tone</span>
@@ -272,7 +402,7 @@
                     <div class="frequency-value">100 Hz</div>
                 </div>
                 <p class="description">The fundamental frequencies of bass instruments. Adds warmth and body to the low end.</p>
-                <div class="instrument">Common in: Bass Guitar, Kick Drum, Snare Drum, Cello, Piano</div>
+                <div class="instrument">Common in: Bass Guitar</div>
                 <div class="audio-controls">
                     <button class="play-btn" data-frequency="100" data-type="tone">
                         <span>Play Tone</span>
@@ -290,7 +420,7 @@
                     <div class="frequency-value">350 Hz</div>
                 </div>
                 <p class="description">The lower harmonics of many instruments. Too much can make a mix muddy.</p>
-                <div class="instrument">Common in: Electric Guitar, Acoustic Guitar, Male Vocals, Piano, Tom-Toms, Lower Brass</div>
+                <div class="instrument">Common in: Male Vocals</div>
                 <div class="audio-controls">
                     <button class="play-btn" data-frequency="350" data-type="tone">
                         <span>Play Tone</span>
@@ -308,7 +438,7 @@
                     <div class="frequency-value">1200 Hz</div>
                 </div>
                 <p class="description">The core of many instruments and vocals. Critical for clarity and presence.</p>
-                <div class="instrument">Common in: Snare Drum, Vocals, Saxophone, Electric Guitar, Piano</div>
+                <div class="instrument">Common in: Snare</div>
                 <div class="audio-controls">
                     <button class="play-btn" data-frequency="1200" data-type="tone">
                         <span>Play Tone</span>
@@ -326,7 +456,7 @@
                     <div class="frequency-value">3000 Hz</div>
                 </div>
                 <p class="description">Adds definition and attack to instruments. Important for vocal intelligibility.</p>
-                <div class="instrument">Common in: Vocals, Snare Drum, Piano, Acoustic Guitar, Trumpet</div>
+                <div class="instrument">Common in: Piano</div>
                 <div class="audio-controls">
                     <button class="play-btn" data-frequency="3000" data-type="tone">
                         <span>Play Tone</span>
@@ -344,7 +474,7 @@
                     <div class="frequency-value">5000 Hz</div>
                 </div>
                 <p class="description">Adds presence and clarity to vocals and instruments. Helps elements cut through.</p>
-                <div class="instrument">Common in: Hi-Hats, Vocals, Cymbals, Acoustic Guitar, Piano, Violin</div>
+                <div class="instrument">Common in: Hi-Hats</div>
                 <div class="audio-controls">
                     <button class="play-btn" data-frequency="5000" data-type="tone">
                         <span>Play Tone</span>
@@ -362,7 +492,7 @@
                     <div class="frequency-value">10000 Hz</div>
                 </div>
                 <p class="description">The highest frequencies, adding air and sparkle. Includes cymbal shimmer.</p>
-                <div class="instrument">Common in: Hi-Hats, Cymbals, Vocals, String Sections, Acoustic Instruments, Synth Pads</div>
+                <div class="instrument">Common in: Cymbals</div>
                 <div class="audio-controls">
                     <button class="play-btn" data-frequency="10000" data-type="tone">
                         <span>Play Tone</span>
@@ -370,6 +500,32 @@
                 </div>
                 <div class="visualizer">
                     <div class="wave" id="wave-10000"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Creative Play Section -->
+        <div class="creative-section">
+            <div class="creative-header">
+                <div class="creative-title">Frequency Explorer</div>
+                <button class="creative-toggle" id="creativeToggle">Show Explorer</button>
+            </div>
+            <div class="creative-content" id="creativeContent">
+                <p class="creative-description">Explore frequencies dynamically by adjusting the slider. This helps you understand how different frequencies sound and how they transition between ranges.</p>
+                
+                <div class="frequency-slider">
+                    <div class="slider-label">
+                        <span>Frequency</span>
+                        <span id="currentFrequency">440 Hz</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" min="20" max="15000" value="440" class="slider" id="frequencySlider">
+                        <div class="slider-value" id="frequencyValue">440 Hz</div>
+                    </div>
+                </div>
+                
+                <div class="creative-controls">
+                    <button class="creative-play" id="creativePlay">Play Dynamic Frequency</button>
                 </div>
             </div>
         </div>
@@ -384,12 +540,82 @@
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             let oscillators = {};
             let isPlaying = {};
+            let creativeOscillator = null;
+            let isCreativePlaying = false;
 
             // Initialize all states
             const frequencies = [40, 100, 350, 1200, 3000, 5000, 10000];
             frequencies.forEach(freq => {
                 isPlaying[`tone-${freq}`] = false;
             });
+
+            // Creative play elements
+            const creativeToggle = document.getElementById('creativeToggle');
+            const creativeContent = document.getElementById('creativeContent');
+            const frequencySlider = document.getElementById('frequencySlider');
+            const frequencyValue = document.getElementById('frequencyValue');
+            const currentFrequency = document.getElementById('currentFrequency');
+            const creativePlay = document.getElementById('creativePlay');
+
+            // Toggle creative section
+            creativeToggle.addEventListener('click', function() {
+                creativeContent.classList.toggle('active');
+                creativeToggle.textContent = creativeContent.classList.contains('active') ? 
+                    'Hide Explorer' : 'Show Explorer';
+            });
+
+            // Update slider value display
+            frequencySlider.addEventListener('input', function() {
+                const value = this.value;
+                frequencyValue.textContent = `${value} Hz`;
+                currentFrequency.textContent = `${value} Hz`;
+                
+                // Update creative oscillator frequency if playing
+                if (isCreativePlaying && creativeOscillator) {
+                    creativeOscillator.frequency.value = value;
+                }
+            });
+
+            // Play creative frequency
+            creativePlay.addEventListener('click', function() {
+                if (isCreativePlaying) {
+                    stopCreativeFrequency();
+                    return;
+                }
+                
+                const frequency = parseInt(frequencySlider.value);
+                creativeOscillator = audioContext.createOscillator();
+                creativeOscillator.type = 'sine';
+                creativeOscillator.frequency.value = frequency;
+                
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = 0.1;
+                
+                creativeOscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                creativeOscillator.start();
+                isCreativePlaying = true;
+                
+                // Update UI
+                creativePlay.textContent = 'Stop Dynamic Frequency';
+                creativePlay.classList.add('stop-btn');
+                creativePlay.classList.remove('creative-play');
+            });
+
+            function stopCreativeFrequency() {
+                if (creativeOscillator) {
+                    creativeOscillator.stop();
+                    creativeOscillator = null;
+                }
+                
+                isCreativePlaying = false;
+                
+                // Update UI
+                creativePlay.textContent = 'Play Dynamic Frequency';
+                creativePlay.classList.remove('stop-btn');
+                creativePlay.classList.add('creative-play');
+            }
 
             // Play a pure tone
             function playTone(frequency) {
@@ -437,7 +663,7 @@
             }
 
             // Add event listeners to all buttons
-            document.querySelectorAll('button').forEach(button => {
+            document.querySelectorAll('button[data-type="tone"]').forEach(button => {
                 button.addEventListener('click', function() {
                     const frequency = parseInt(this.getAttribute('data-frequency'));
                     playTone(frequency);
