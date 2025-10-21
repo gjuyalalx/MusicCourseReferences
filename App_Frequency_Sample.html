@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Frequency Learning App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .creator {
+            font-size: 0.8rem;
+            color: #3498db;
+            font-weight: 500;
+            background: rgba(52, 152, 219, 0.1);
+            padding: 4px 10px;
+            border-radius: 15px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            color: #7f8c8d;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .frequency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .frequency-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eaeaea;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .frequency-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .frequency-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .frequency-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .frequency-value {
+            font-size: 0.85rem;
+            background: #3498db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .description {
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #5d6d7e;
+            font-size: 0.8rem;
+            flex-grow: 1;
+        }
+
+        .instrument {
+            font-size: 0.75rem;
+            color: #3498db;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .instrument::before {
+            content: "🎵";
+            font-size: 0.8rem;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex: 1;
+            font-size: 0.8rem;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            opacity: 0.9;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .play-btn {
+            background: #3498db;
+        }
+
+        .play-btn:hover {
+            background: #2980b9;
+        }
+
+        .stop-btn {
+            background: #e74c3c;
+        }
+
+        .stop-btn:hover {
+            background: #c0392b;
+        }
+
+        .visualizer {
+            height: 30px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #eaeaea;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(52, 152, 219, 0.1), transparent);
+        }
+
+        .active-wave {
+            background: linear-gradient(to top, rgba(52, 152, 219, 0.3), transparent);
+            animation: waveAnimation 0.8s infinite linear;
+        }
+
+        @keyframes waveAnimation {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .frequency-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Audio Frequency Learning</h1>
+            <div class="creator">Created by ALX</div>
+        </header>
+
+        <p class="subtitle">Explore different frequency ranges and their characteristics in music production. Click to hear pure tones.</p>
+
+        <div class="frequency-grid">
+            <!-- Sub-bass -->
+            <div class="frequency-card">
+                <div class="frequency-header">
+                    <div class="frequency-name">Sub-bass</div>
+                    <div class="frequency-value">40 Hz</div>
+                </div>
+                <p class="description">The lowest audible frequencies. Felt more than heard, provides power and foundation.</p>
+                <div class="instrument">Common in: Kick Drum, Bass Guitar, Synth Bass, Pipe Organ, Tuba</div>
+                <div class="audio-controls">
+                    <button class="play-btn" data-frequency="40" data-type="tone">
+                        <span>Play Tone</span>
+                    </button>
+                </div>
+                <div class="visualizer">
+                    <div class="wave" id="wave-40"></div>
+                </div>
+            </div>
+
+            <!-- Bass -->
+            <div class="frequency-card">
+                <div class="frequency-header">
+                    <div class="frequency-name">Bass</div>
+                    <div class="frequency-value">100 Hz</div>
+                </div>
+                <p class="description">The fundamental frequencies of bass instruments. Adds warmth and body to the low end.</p>
+                <div class="instrument">Common in: Bass Guitar, Kick Drum, Snare Drum, Cello, Piano</div>
+                <div class="audio-controls">
+                    <button class="play-btn" data-frequency="100" data-type="tone">
+                        <span>Play Tone</span>
+                    </button>
+                </div>
+                <div class="visualizer">
+                    <div class="wave" id="wave-100"></div>
+                </div>
+            </div>
+
+            <!-- Lower midrange -->
+            <div class="frequency-card">
+                <div class="frequency-header">
+                    <div class="frequency-name">Lower Midrange</div>
+                    <div class="frequency-value">350 Hz</div>
+                </div>
+                <p class="description">The lower harmonics of many instruments. Too much can make a mix muddy.</p>
+                <div class="instrument">Common in: Electric Guitar, Acoustic Guitar, Male Vocals, Piano, Tom-Toms, Lower Brass</div>
+                <div class="audio-controls">
+                    <button class="play-btn" data-frequency="350" data-type="tone">
+                        <span>Play Tone</span>
+                    </button>
+                </div>
+                <div class="visualizer">
+                    <div class="wave" id="wave-350"></div>
+                </div>
+            </div>
+
+            <!-- Midrange -->
+            <div class="frequency-card">
+                <div class="frequency-header">
+                    <div class="frequency-name">Midrange</div>
+                    <div class="frequency-value">1200 Hz</div>
+                </div>
+                <p class="description">The core of many instruments and vocals. Critical for clarity and presence.</p>
+                <div class="instrument">Common in: Snare Drum, Vocals, Saxophone, Electric Guitar, Piano</div>
+                <div class="audio-controls">
+                    <button class="play-btn" data-frequency="1200" data-type="tone">
+                        <span>Play Tone</span>
+                    </button>
+                </div>
+                <div class="visualizer">
+                    <div class="wave" id="wave-1200"></div>
+                </div>
+            </div>
+
+            <!-- Upper midrange -->
+            <div class="frequency-card">
+                <div class="frequency-header">
+                    <div class="frequency-name">Upper Midrange</div>
+                    <div class="frequency-value">3000 Hz</div>
+                </div>
+                <p class="description">Adds definition and attack to instruments. Important for vocal intelligibility.</p>
+                <div class="instrument">Common in: Vocals, Snare Drum, Piano, Acoustic Guitar, Trumpet</div>
+                <div class="audio-controls">
+                    <button class="play-btn" data-frequency="3000" data-type="tone">
+                        <span>Play Tone</span>
+                    </button>
+                </div>
+                <div class="visualizer">
+                    <div class="wave" id="wave-3000"></div>
+                </div>
+            </div>
+
+            <!-- Presence -->
+            <div class="frequency-card">
+                <div class="frequency-header">
+                    <div class="frequency-name">Presence</div>
+                    <div class="frequency-value">5000 Hz</div>
+                </div>
+                <p class="description">Adds presence and clarity to vocals and instruments. Helps elements cut through.</p>
+                <div class="instrument">Common in: Hi-Hats, Vocals, Cymbals, Acoustic Guitar, Piano, Violin</div>
+                <div class="audio-controls">
+                    <button class="play-btn" data-frequency="5000" data-type="tone">
+                        <span>Play Tone</span>
+                    </button>
+                </div>
+                <div class="visualizer">
+                    <div class="wave" id="wave-5000"></div>
+                </div>
+            </div>
+
+            <!-- Brilliance -->
+            <div class="frequency-card">
+                <div class="frequency-header">
+                    <div class="frequency-name">Brilliance</div>
+                    <div class="frequency-value">10000 Hz</div>
+                </div>
+                <p class="description">The highest frequencies, adding air and sparkle. Includes cymbal shimmer.</p>
+                <div class="instrument">Common in: Hi-Hats, Cymbals, Vocals, String Sections, Acoustic Instruments, Synth Pads</div>
+                <div class="audio-controls">
+                    <button class="play-btn" data-frequency="10000" data-type="tone">
+                        <span>Play Tone</span>
+                    </button>
+                </div>
+                <div class="visualizer">
+                    <div class="wave" id="wave-10000"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Use this tool to train your ears to recognize different frequency ranges in music production.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            let oscillators = {};
+            let isPlaying = {};
+
+            // Initialize all states
+            const frequencies = [40, 100, 350, 1200, 3000, 5000, 10000];
+            frequencies.forEach(freq => {
+                isPlaying[`tone-${freq}`] = false;
+            });
+
+            // Play a pure tone
+            function playTone(frequency) {
+                if (isPlaying[`tone-${frequency}`]) {
+                    stopTone(frequency);
+                    return;
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                oscillator.type = 'sine';
+                oscillator.frequency.value = frequency;
+                
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = 0.1;
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                
+                oscillators[frequency] = oscillator;
+                isPlaying[`tone-${frequency}`] = true;
+                
+                // Update UI
+                document.getElementById(`wave-${frequency}`).classList.add('active-wave');
+                document.querySelector(`button[data-frequency="${frequency}"][data-type="tone"]`).textContent = 'Stop Tone';
+                document.querySelector(`button[data-frequency="${frequency}"][data-type="tone"]`).classList.add('stop-btn');
+                document.querySelector(`button[data-frequency="${frequency}"][data-type="tone"]`).classList.remove('play-btn');
+            }
+
+            // Stop a pure tone
+            function stopTone(frequency) {
+                if (oscillators[frequency]) {
+                    oscillators[frequency].stop();
+                    delete oscillators[frequency];
+                }
+                
+                isPlaying[`tone-${frequency}`] = false;
+                
+                // Update UI
+                document.getElementById(`wave-${frequency}`).classList.remove('active-wave');
+                document.querySelector(`button[data-frequency="${frequency}"][data-type="tone"]`).textContent = 'Play Tone';
+                document.querySelector(`button[data-frequency="${frequency}"][data-type="tone"]`).classList.remove('stop-btn');
+                document.querySelector(`button[data-frequency="${frequency}"][data-type="tone"]`).classList.add('play-btn');
+            }
+
+            // Add event listeners to all buttons
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const frequency = parseInt(this.getAttribute('data-frequency'));
+                    playTone(frequency);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
